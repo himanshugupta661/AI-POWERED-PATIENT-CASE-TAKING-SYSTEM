@@ -1,0 +1,9 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="60" r="60" fill="#E0F2FE"/>
+  <!-- Doctor Avatar -->
+  <circle cx="60" cy="45" r="22" fill="#0284C7"/>
+  <path d="M26 102C26 84 41 72 60 72C79 72 94 84 94 102" fill="#0369A1"/>
+  <!-- Stethoscope overlay -->
+  <path d="M46 72V84C46 91.732 52.268 98 60 98C67.732 98 74 91.732 74 84V72" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="60" cy="100" r="5" fill="#38BDF8"/>
+</svg>

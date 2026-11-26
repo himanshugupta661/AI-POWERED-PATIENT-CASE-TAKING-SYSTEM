@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Roster - Doctor Console{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.dashboard') }}" class="sidebar-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.scan_case') }}" class="sidebar-link">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Scan QR / Barcode</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.case_history') }}" class="sidebar-link">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <span>Case Triage & Queue</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.patients') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Patient Roster</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">Registered Patient Roster</h4>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1">Patient Directory</h5>
+                        <p class="text-muted small mb-0">Total registered patients: {{ patients|length }}</p>
+                    </div>
+                </div>
+
+                {% if patients %}
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Demographics</th>
+                                <th>Contact Information</th>
+                                <th>Blood Group</th>
+                                <th>Total Cases</th>
+                                <th class="text-end">Latest Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in patients %}
+                            {% set prof = p.patient_profile %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-circle" style="width: 34px; height: 34px; font-size: 0.85rem;">
+                                            {{ p.full_name[:2].upper() }}
+                                        </div>
+                                        <div>
+                                            <strong class="text-dark">{{ p.full_name }}</strong>
+                                            <div class="small text-muted">{{ p.email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{ prof.gender or 'N/A' }} / {{ prof.age or 'N/A' }} yrs
+                                </td>
+                                <td>
+                                    <div>{{ prof.phone or 'No phone' }}</div>
+                                    {% if prof.emergency_contact %}
+                                    <div class="small text-muted">ICE: {{ prof.emergency_contact }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ prof.blood_group or 'Unknown' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary rounded-pill">{{ p.cases.count() }} cases</span>
+                                </td>
+                                <td class="text-end">
+                                    {% set latest = p.cases.order_by(p.cases.model.created_at.desc()).first() %}
+                                    {% if latest %}
+                                    <a href="{{ url_for('doctor.patient_case', public_case_id=latest.public_case_id) }}" class="btn btn-sm btn-outline-primary">
+                                        {{ latest.public_case_id }} &rarr;
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted small">No cases</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h5>No Patients Registered</h5>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

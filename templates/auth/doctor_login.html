@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Clinical Portal - PatientCase AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0369a1 100%);">
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="{{ url_for('index') }}" class="auth-brand">
+                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="32" height="32">
+                <span>PATIENTCASE</span> AI
+            </a>
+            <div>
+                <span class="auth-role-indicator role-doctor">
+                    <i class="fa-solid fa-user-doctor"></i> Physician Console
+                </span>
+            </div>
+            <h3 class="fw-bold mt-2 mb-1">Doctor Verification</h3>
+            <p class="text-muted small">Sign in to review verified case intakes, scan QR passes, and log clinical notes</p>
+        </div>
+
+        <!-- Development Demo Quick Autofill -->
+        <div class="demo-account-box d-flex align-items-center justify-content-between" style="border-color: #06b6d4;">
+            <div>
+                <span class="demo-badge" style="background: #0891b2;">Demo Physician</span>
+                <span class="ms-2 fw-semibold">doctor@patientcase.ai</span>
+            </div>
+            <button type="button" class="demo-fill-btn" style="border-color: #0891b2; color: #0891b2;" onclick="fillDemoAccount('doctor@patientcase.ai', 'Doctor@123')">
+                <i class="fa-solid fa-bolt me-1"></i> Auto-Fill
+            </button>
+        </div>
+
+        <form action="{{ url_for('auth.doctor_login') }}{% if request.args.get('next') %}?next={{ request.args.get('next') }}{% endif %}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="mb-3">
+                <label class="form-label form-label-custom">Physician Email</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-stethoscope"></i></span>
+                    <input type="email" name="email" class="form-control form-control-custom border-start-0" placeholder="doctor@clinic.org" value="{{ email or '' }}" required autofocus>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="form-label form-label-custom mb-0">Clinical Password</label>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="small text-decoration-none text-primary">Need Help?</a>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-key"></i></span>
+                    <input type="password" name="password" class="form-control form-control-custom border-start-0" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary-custom justify-content-center py-2" style="background-color: #0284c7;">
+                    <i class="fa-solid fa-lock-open me-1"></i> Unlock Doctor Console
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top">
+            <p class="small text-muted mb-0">Are you a patient? <a href="{{ url_for('auth.login') }}" class="fw-semibold text-decoration-none text-primary">Switch to Patient Portal &rarr;</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

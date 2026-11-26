@@ -1,0 +1,99 @@
+/* ==========================================================================
+   AUTHENTICATION STYLES - PATIENTCASE AI
+   ========================================================================== */
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 520px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.auth-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-navy);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+}
+.auth-brand span {
+    color: var(--medical-blue);
+}
+
+.auth-role-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+.role-patient {
+    background-color: var(--medical-blue-light);
+    color: var(--medical-blue);
+    border: 1px solid #bae6fd;
+}
+.role-doctor {
+    background-color: #ecfeff;
+    color: #0891b2;
+    border: 1px solid #a5f3fc;
+}
+
+/* Quick Fill Demo Box */
+.demo-account-box {
+    background: #f8fafc;
+    border: 1px dashed var(--medical-blue);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+}
+.demo-badge {
+    background: var(--medical-blue);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.demo-fill-btn {
+    background: transparent;
+    border: 1px solid var(--medical-blue);
+    color: var(--medical-blue);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.demo-fill-btn:hover {
+    background: var(--medical-blue);
+    color: #ffffff;
+}

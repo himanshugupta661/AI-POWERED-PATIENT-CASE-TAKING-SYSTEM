@@ -1,0 +1,179 @@
+/* ==========================================================================
+   CASE TAKING & VOICE WORKFLOW STYLES
+   ========================================================================== */
+
+/* Multi-step progress tracker */
+.wizard-progress {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 2.5rem;
+}
+.wizard-progress::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    right: 25px;
+    height: 3px;
+    background: var(--border-color);
+    z-index: 1;
+}
+.wizard-progress-bar {
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    height: 3px;
+    background: var(--medical-blue);
+    z-index: 2;
+    transition: width 0.3s ease;
+}
+.wizard-step-node {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    background: var(--bg-light);
+    padding: 0 0.5rem;
+}
+.wizard-step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 3px solid var(--border-color);
+    color: var(--text-muted);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem auto;
+    transition: all 0.3s ease;
+}
+.wizard-step-node.active .wizard-step-circle {
+    border-color: var(--medical-blue);
+    background: var(--medical-blue);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2);
+}
+.wizard-step-node.completed .wizard-step-circle {
+    border-color: var(--status-success);
+    background: var(--status-success);
+    color: #ffffff;
+}
+.wizard-step-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.wizard-step-node.active .wizard-step-label {
+    color: var(--medical-blue);
+}
+
+/* Voice Input Controls & Pulsing Mic */
+.voice-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f1f5f9;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    padding: 0.5rem 1rem;
+    margin-bottom: -1px;
+}
+.btn-mic-toggle {
+    background: #ffffff;
+    border: 1.5px solid var(--medical-blue);
+    color: var(--medical-blue);
+    border-radius: 9999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-mic-toggle:hover {
+    background: var(--medical-blue-light);
+}
+.btn-mic-toggle.recording {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    animation: micPulse 1.5s infinite;
+}
+@keyframes micPulse {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.voice-status-indicator {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* AI Preliminary Extraction Live Box */
+.ai-extract-preview {
+    background: #f0f9ff;
+    border: 1px dashed var(--medical-blue);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+}
+.ai-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #ffffff;
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    margin: 0.2rem;
+}
+
+/* Structured Intake Summary Card */
+.clinical-summary-sheet {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 2rem;
+}
+.summary-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.summary-field-row {
+    display: flex;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px dashed #f1f5f9;
+    padding-bottom: 0.5rem;
+}
+.summary-field-name {
+    width: 220px;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.summary-field-value {
+    color: var(--primary-navy);
+    font-size: 0.95rem;
+    flex-grow: 1;
+}

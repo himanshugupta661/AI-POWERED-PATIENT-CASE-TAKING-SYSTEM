@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}403 - Access Forbidden | PatientCase AI{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light p-3">
+    <div class="card card-custom text-center p-5 max-w-500 shadow-sm border-danger">
+        <div class="empty-state-icon text-danger mb-3">
+            <i class="fa-solid fa-lock fa-2x"></i>
+        </div>
+        <h2 class="fw-bold mb-2">403 - Access Restricted</h2>
+        <p class="text-muted mb-4">You do not possess the required clinical authorization or role credentials to access this protected healthcare record.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary-custom">
+                <i class="fa-solid fa-user me-1"></i> Patient Login
+            </a>
+            <a href="{{ url_for('auth.doctor_login') }}" class="btn btn-primary-custom">
+                <i class="fa-solid fa-user-doctor me-1"></i> Doctor Login
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

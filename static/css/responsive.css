@@ -1,0 +1,48 @@
+/* ==========================================================================
+   RESPONSIVE LAYOUT STYLES
+   ========================================================================== */
+
+@media (max-width: 991.98px) {
+    .app-sidebar {
+        transform: translateX(-100%);
+    }
+    .app-sidebar.show {
+        transform: translateX(0);
+    }
+    .app-main {
+        margin-left: 0;
+    }
+    .dashboard-topbar {
+        padding: 0.75rem 1rem;
+    }
+    .dashboard-content {
+        padding: 1rem;
+    }
+    .summary-field-row {
+        flex-direction: column;
+    }
+    .summary-field-name {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+    .landing-hero h1 {
+        font-size: 2.25rem;
+    }
+    .patient-welcome-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    .auth-card {
+        padding: 1.5rem 1rem;
+    }
+    .pass-id-display {
+        font-size: 1.25rem;
+    }
+}

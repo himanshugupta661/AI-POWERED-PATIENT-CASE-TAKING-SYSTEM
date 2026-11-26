@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}My Clinical Notes - Doctor Console{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.dashboard') }}" class="sidebar-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.scan_case') }}" class="sidebar-link">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Scan QR / Barcode</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.case_history') }}" class="sidebar-link">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <span>Case Triage & Queue</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.doctor_notes') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-book-medical"></i>
+                    <span>My Clinical Notes</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">Physician Clinical Notes Archive</h4>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card card-custom p-4">
+                <h5 class="fw-bold mb-3">Authored Clinical Notes & Reviews</h5>
+
+                {% if notes %}
+                    {% for n in notes %}
+                    <div class="doctor-note-card mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="case-id-badge">{{ n.case.public_case_id }}</span>
+                                <strong class="ms-2 text-dark">{{ n.case.patient.full_name if n.case and n.case.patient else 'Patient' }}</strong>
+                            </div>
+                            <span class="small text-muted">{{ n.created_at.strftime('%Y-%m-%d %I:%M %p') if n.created_at else '' }}</span>
+                        </div>
+
+                        {% if n.diagnosis_impression %}
+                        <div class="diagnosis-box my-2">
+                            <strong class="text-primary small d-block">Clinical Impression:</strong>
+                            <div>{{ n.diagnosis_impression }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if n.clinical_recommendation %}
+                        <div class="recommendation-box my-2">
+                            <strong class="text-success small d-block">Treatment / Instructions:</strong>
+                            <div style="white-space: pre-line;">{{ n.clinical_recommendation }}</div>
+                        </div>
+                        {% endif %}
+
+                        <div class="mt-2">
+                            <strong class="small text-muted d-block">Observation Notes:</strong>
+                            <p class="mb-0 text-dark small" style="white-space: pre-line;">{{ n.note }}</p>
+                        </div>
+
+                        <div class="mt-3 pt-2 border-top text-end">
+                            <a href="{{ url_for('doctor.patient_case', public_case_id=n.case.public_case_id) }}" class="btn btn-sm btn-outline-primary">
+                                Open Patient Case &rarr;
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <h5>No Clinical Notes Authored Yet</h5>
+                    <p class="text-muted small">Notes authored during case reviews will appear here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

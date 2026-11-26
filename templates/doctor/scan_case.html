@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Scan QR / Barcode Pass - Doctor Console{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/qr-barcode.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.dashboard') }}" class="sidebar-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.scan_case') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Scan QR / Barcode</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.case_history') }}" class="sidebar-link">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <span>Case Triage & Queue</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.patients') }}" class="sidebar-link">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Patient Roster</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">Case Scanner & Verification Gateway</h4>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="row g-4 justify-content-center">
+                <!-- Optical Camera Scanner Card -->
+                <div class="col-lg-7">
+                    <div class="card card-custom p-4 text-center">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="fa-solid fa-camera text-primary me-2"></i> Live Camera Scanner
+                            </h5>
+                            <button id="btnToggleCamera" type="button" class="btn btn-primary-custom btn-sm" onclick="initCameraScanner('reader')">
+                                <i class="fa-solid fa-camera me-1"></i> Start Camera Scanner
+                            </button>
+                        </div>
+
+                        <p class="text-muted small">Align the patient's digital or printed QR pass / Barcode within the camera frame.</p>
+
+                        <!-- Video Viewfinder Element -->
+                        <div id="reader" style="width: 100%; max-width: 480px; min-height: 280px; margin: 0 auto; background: #0f172a; border-radius: var(--radius-md); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                            <div class="text-white text-center p-4">
+                                <i class="fa-solid fa-camera-viewfinder fa-3x text-info mb-3"></i>
+                                <div>Click "Start Camera Scanner" to enable webcam</div>
+                            </div>
+                        </div>
+
+                        <div id="scannerStatus" class="mt-3 small">
+                            <span class="text-muted">Camera is inactive.</span>
+                        </div>
+
+                        <!-- Image File Upload Alternative -->
+                        <div class="mt-4 pt-3 border-top text-start">
+                            <label class="form-label form-label-custom mb-1">
+                                <i class="fa-solid fa-image text-primary me-1"></i> Or Upload Pass Photo / Image:
+                            </label>
+                            <input type="file" id="qrFileInput" class="form-control form-control-sm" accept="image/*" onchange="scanUploadedImage(this)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Case ID / Token Entry Fallback -->
+                <div class="col-lg-5">
+                    <div class="card card-custom p-4">
+                        <h5 class="fw-bold mb-2 text-dark">
+                            <i class="fa-solid fa-keyboard text-primary me-2"></i> Manual Case ID Search
+                        </h5>
+                        <p class="text-muted small mb-3">
+                            If camera scanning is not available on this terminal, enter the alphanumeric Case ID printed on the patient's ticket.
+                        </p>
+
+                        <form action="{{ url_for('doctor.access_case') }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                            <div class="mb-3">
+                                <label class="form-label form-label-custom">Case Identifier or Barcode</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-barcode"></i></span>
+                                    <input type="text" name="case_id" class="form-control form-control-custom border-start-0" placeholder="e.g. PC-2026-B7E2X9" required>
+                                </div>
+                                <div class="form-text small">Both hyphenated (PC-2026-XXXXXX) and raw barcode (PC2026XXXXXX) formats are accepted.</div>
+                            </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary-custom justify-content-center py-2">
+                                    <i class="fa-solid fa-magnifying-glass me-1"></i> Retrieve Patient Case
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="p-3 bg-light rounded-3 border mt-3">
+                            <h6 class="fw-bold small mb-2"><i class="fa-solid fa-circle-question text-info me-1"></i> Quick Test Hint:</h6>
+                            <p class="small text-muted mb-1">You can test the lookup right now with seeded demo cases:</p>
+                            <code class="d-block mb-1">PC-2026-B7E2X9</code>
+                            <code class="d-block">PC-2026-F4N8T1</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
+{% endblock %}

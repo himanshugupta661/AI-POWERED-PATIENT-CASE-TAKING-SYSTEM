@@ -1,0 +1,10 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="40" rx="10" fill="#0284C7"/>
+  <path d="M12 20C12 24.4183 15.5817 28 20 28C24.4183 28 28 24.4183 28 20V12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="28" cy="12" r="2.5" fill="#38BDF8"/>
+  <circle cx="12" cy="14" r="2.5" fill="#38BDF8"/>
+  <path d="M20 28V32" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M17 32H23" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- AI sparkle cross -->
+  <path d="M20 15V23M16 19H24" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

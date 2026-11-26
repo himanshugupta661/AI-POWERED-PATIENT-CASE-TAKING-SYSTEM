@@ -1,0 +1,234 @@
+/* ==========================================================================
+   PATIENTCASE AI - MAIN DESIGN SYSTEM
+   Color Palette: Deep Navy, Medical Blue, Cyan, Crisp White, Light Gray
+   ========================================================================== */
+
+:root {
+    --primary-navy: #0f172a;
+    --navy-surface: #1e293b;
+    --navy-border: #334155;
+    --medical-blue: #0284c7;
+    --medical-blue-hover: #0369a1;
+    --medical-blue-light: #e0f2fe;
+    --cyan-accent: #06b6d4;
+    --cyan-light: #ecfeff;
+    
+    --bg-light: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    
+    --status-success: #10b981;
+    --status-success-bg: #ecfdf5;
+    --status-warning: #f59e0b;
+    --status-warning-bg: #fffbeb;
+    --status-info: #0284c7;
+    --status-info-bg: #f0f9ff;
+    --status-danger: #ef4444;
+    --status-danger-bg: #fef2f2;
+    
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+    
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-navy);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* Base Buttons */
+.btn-primary-custom {
+    background-color: var(--medical-blue);
+    color: #ffffff;
+    border: 1px solid var(--medical-blue);
+    padding: 0.625rem 1.25rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+.btn-primary-custom:hover {
+    background-color: var(--medical-blue-hover);
+    color: #ffffff;
+    border-color: var(--medical-blue-hover);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.btn-secondary-custom {
+    background-color: #ffffff;
+    color: var(--primary-navy);
+    border: 1px solid var(--border-color);
+    padding: 0.625rem 1.25rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+.btn-secondary-custom:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-navy);
+    border-color: #cbd5e1;
+}
+
+.btn-cyan-custom {
+    background-color: var(--cyan-accent);
+    color: #ffffff;
+    border: 1px solid var(--cyan-accent);
+    padding: 0.625rem 1.25rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.btn-cyan-custom:hover {
+    background-color: #0891b2;
+    color: #ffffff;
+}
+
+/* Status Badges */
+.badge-custom {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 9999px;
+}
+.badge-submitted, .badge-warning {
+    background-color: var(--status-warning-bg);
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+.badge-in_review, .badge-info {
+    background-color: var(--status-info-bg);
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+.badge-reviewed, .badge-primary {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.badge-completed, .badge-success {
+    background-color: var(--status-success-bg);
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+.badge-draft, .badge-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+/* Cards */
+.card-custom {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-custom:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Medical Disclaimer Banner */
+.medical-safety-banner {
+    background: #fffbeb;
+    border-left: 4px solid var(--status-warning);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 1.15rem;
+    font-size: 0.875rem;
+    color: #92400e;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+/* Flash Messages */
+.alert-container {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 9999;
+    max-width: 420px;
+    width: 100%;
+}
+.alert-custom {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border: none;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    animation: slideInRight 0.3s ease;
+}
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Clean Form Controls */
+.form-label-custom {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary-navy);
+    margin-bottom: 0.35rem;
+}
+.form-control-custom, .form-select-custom {
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.65rem 0.95rem;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+.form-control-custom:focus, .form-select-custom:focus {
+    border-color: var(--medical-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-muted);
+}
+.empty-state-icon {
+    font-size: 3rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}

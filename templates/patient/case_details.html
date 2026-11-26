@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Case Details: {{ case.public_case_id }} - PatientCase AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/patient.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/case-taking.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="app-sidebar no-print">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.dashboard') }}" class="sidebar-link">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.my_cases') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>My Cases</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('case.new_case') }}" class="sidebar-link">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>New Case Intake</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="dashboard-topbar no-print">
+            <div class="topbar-left">
+                <a href="{{ url_for('patient.my_cases') }}" class="btn btn-sm btn-outline-secondary me-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <h4 class="topbar-title">Case Record: {{ case.public_case_id }}</h4>
+            </div>
+            <div class="topbar-right">
+                <a href="{{ url_for('patient.qr_barcode', public_case_id=case.public_case_id) }}" class="btn btn-cyan-custom btn-sm">
+                    <i class="fa-solid fa-qrcode me-1"></i> QR & Barcode Pass
+                </a>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            {% set s_info = get_status_info(case.status) %}
+
+            <!-- Case Header Card -->
+            <div class="card card-custom p-4 mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <div class="text-muted small">Public Case Identification</div>
+                        <h3 class="fw-bold mb-1 text-dark">{{ case.public_case_id }}</h3>
+                        <div class="small text-muted">
+                            Filed on {{ case.created_at.strftime('%A, %b %d, %Y at %I:%M %p') if case.created_at else '' }}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge-custom badge-{{ case.status }} fs-6 px-3 py-2">
+                            <i class="fa-solid {{ s_info.icon }}"></i> {{ s_info.label }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Clinical Review Section (if available) -->
+            {% if case.notes %}
+            <div class="card card-custom p-4 mb-4 border-primary">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-primary">
+                        <i class="fa-solid fa-stethoscope me-2"></i> Physician Clinical Assessment & Notes
+                    </h5>
+                    <span class="badge bg-primary">Verified Review</span>
+                </div>
+
+                {% for n in case.notes %}
+                <div class="doctor-note-card mb-3">
+                    <div class="doctor-note-header">
+                        <strong class="text-dark">{{ n.doctor.full_name if n.doctor else 'Attending Physician' }}</strong>
+                        <span class="small text-muted">{{ n.created_at.strftime('%b %d, %Y - %I:%M %p') if n.created_at else '' }}</span>
+                    </div>
+
+                    {% if n.diagnosis_impression %}
+                    <div class="diagnosis-box">
+                        <strong class="text-primary d-block mb-1"><i class="fa-solid fa-notes-medical me-1"></i> Clinical Impression / Assessment:</strong>
+                        <div>{{ n.diagnosis_impression }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if n.clinical_recommendation %}
+                    <div class="recommendation-box">
+                        <strong class="text-success d-block mb-1"><i class="fa-solid fa-clipboard-check me-1"></i> Physician Recommendations & Plan:</strong>
+                        <div style="white-space: pre-line;">{{ n.clinical_recommendation }}</div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-2 text-dark">
+                        <strong>Clinical Observations:</strong>
+                        <p class="mb-0 text-muted" style="white-space: pre-line;">{{ n.note }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Clinical Intake Details -->
+            <div class="clinical-summary-sheet mb-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">Reported Intake Details</h5>
+
+                <div class="summary-section-title">
+                    <i class="fa-solid fa-heart-pulse text-primary"></i> Chief Complaint & Symptoms
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Chief Complaint</div>
+                    <div class="summary-field-value fw-bold text-dark">{{ case.chief_complaint }}</div>
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Symptoms Narrative</div>
+                    <div class="summary-field-value">{{ case.symptoms }}</div>
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Duration</div>
+                    <div class="summary-field-value">{{ case.duration or 'Not reported' }}</div>
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Severity</div>
+                    <div class="summary-field-value">{{ case.severity or 'Not reported' }}</div>
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Pattern</div>
+                    <div class="summary-field-value">{{ case.pattern or 'Not reported' }}</div>
+                </div>
+
+                <div class="summary-section-title">
+                    <i class="fa-solid fa-notes-medical text-primary"></i> Medical History & Profile
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Past Medical History</div>
+                    <div class="summary-field-value">{{ case.medical_history or 'No significant history reported' }}</div>
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Allergies</div>
+                    <div class="summary-field-value">{{ case.allergies or 'No known drug allergies' }}</div>
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Current Medications</div>
+                    <div class="summary-field-value">{{ case.medications or 'No current regular medications' }}</div>
+                </div>
+                <div class="summary-field-row">
+                    <div class="summary-field-name">Family History</div>
+                    <div class="summary-field-value">{{ case.family_history or 'Not specified' }}</div>
+                </div>
+
+                {% if case.follow_up_responses %}
+                <div class="summary-section-title">
+                    <i class="fa-solid fa-comments text-primary"></i> Follow-Up Clarifications
+                </div>
+                {% for f in case.follow_up_responses %}
+                <div class="summary-field-row">
+                    <div class="summary-field-name text-wrap">{{ f.question }}</div>
+                    <div class="summary-field-value fw-semibold text-primary">{{ f.answer }}</div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

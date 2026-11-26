@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}My Medical Cases - PatientCase AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/patient.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.dashboard') }}" class="sidebar-link">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('case.new_case') }}" class="sidebar-link">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>New Case Intake</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.my_cases') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>My Cases</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.profile') }}" class="sidebar-link">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-light w-100">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <main class="app-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">My Medical Case History</h4>
+            </div>
+            <div class="topbar-right">
+                <a href="{{ url_for('case.new_case') }}" class="btn btn-primary-custom btn-sm">
+                    <i class="fa-solid fa-plus me-1"></i> File New Case
+                </a>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Filter Bar & Search -->
+            <div class="card card-custom p-3 mb-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" id="patientCaseSearch" class="form-control form-control-custom border-start-0" placeholder="Filter cases by symptom or ID...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                            <a href="{{ url_for('patient.my_cases', status='all') }}" class="btn btn-sm {% if current_filter == 'all' %}btn-primary-custom{% else %}btn-secondary-custom{% endif %}">
+                                All ({{ stats.total }})
+                            </a>
+                            <a href="{{ url_for('patient.my_cases', status='submitted') }}" class="btn btn-sm {% if current_filter == 'submitted' %}btn-primary-custom{% else %}btn-secondary-custom{% endif %}">
+                                Pending ({{ stats.pending_review }})
+                            </a>
+                            <a href="{{ url_for('patient.my_cases', status='reviewed') }}" class="btn btn-sm {% if current_filter == 'reviewed' %}btn-primary-custom{% else %}btn-secondary-custom{% endif %}">
+                                Reviewed
+                            </a>
+                            <a href="{{ url_for('patient.my_cases', status='completed') }}" class="btn btn-sm {% if current_filter == 'completed' %}btn-primary-custom{% else %}btn-secondary-custom{% endif %}">
+                                Completed ({{ stats.completed }})
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Records Table -->
+            <div class="card card-custom p-4">
+                {% if cases %}
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Date Filed</th>
+                                <th>Chief Complaint</th>
+                                <th>Reported Severity</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in cases %}
+                            {% set s_info = get_status_info(c.status) %}
+                            <tr class="patient-case-row">
+                                <td>
+                                    <span class="case-id-badge">{{ c.public_case_id }}</span>
+                                </td>
+                                <td class="text-muted small">
+                                    {{ c.created_at.strftime('%Y-%m-%d %I:%M %p') if c.created_at else 'Recent' }}
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ c.chief_complaint }}</div>
+                                    <div class="small text-muted text-truncate" style="max-width: 280px;">{{ c.symptoms }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">{{ c.severity or 'Not specified' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge-custom badge-{{ c.status }}">
+                                        <i class="fa-solid {{ s_info.icon }}"></i> {{ s_info.label }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <a href="{{ url_for('patient.case_details', public_case_id=c.public_case_id) }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="fa-regular fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ url_for('patient.qr_barcode', public_case_id=c.public_case_id) }}" class="btn btn-sm btn-outline-secondary" title="QR & Barcode Pass">
+                                            <i class="fa-solid fa-qrcode"></i> Pass
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <h5>No Cases Found</h5>
+                    <p class="text-muted small">No cases match the selected filter. Try selecting 'All' or start a new clinical intake.</p>
+                    <a href="{{ url_for('case.new_case') }}" class="btn btn-primary-custom mt-2">
+                        <i class="fa-solid fa-plus me-1"></i> New Case Intake
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/patient.js') }}"></script>
+{% endblock %}

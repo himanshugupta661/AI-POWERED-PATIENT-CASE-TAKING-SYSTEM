@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard - PatientCase AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/patient.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <!-- Dark Navy Sidebar -->
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.dashboard') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('case.new_case') }}" class="sidebar-link">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>New Case Intake</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.my_cases') }}" class="sidebar-link">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>My Cases</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('patient.profile') }}" class="sidebar-link">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span>My Profile</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                        {{ user.full_name[:2].upper() }}
+                    </div>
+                    <div class="small text-truncate" style="max-width: 130px;">
+                        <div class="text-white fw-semibold text-truncate">{{ user.full_name }}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">Patient</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="text-muted text-hover-white" title="Sign Out">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="app-main">
+        <!-- Top Navigation -->
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">Patient Portal</h4>
+            </div>
+
+            <div class="topbar-right">
+                <a href="{{ url_for('case.new_case') }}" class="btn btn-primary-custom btn-sm">
+                    <i class="fa-solid fa-plus me-1"></i> Start New Intake
+                </a>
+            </div>
+        </header>
+
+        <!-- Body Container -->
+        <div class="dashboard-content">
+            <!-- Welcome Banner -->
+            <div class="patient-welcome-card">
+                <div>
+                    <h2>Welcome back, {{ user.full_name }}!</h2>
+                    <p>Track your health symptoms, generate structured summaries for your doctor, and access your digital QR case passes anytime.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('case.new_case') }}" class="btn btn-cyan-custom">
+                        <i class="fa-solid fa-notes-medical"></i> Describe Symptoms
+                    </a>
+                </div>
+            </div>
+
+            <!-- Metric KPI Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">Total Cases</div>
+                        <div class="metric-value">{{ stats.total }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-blue">
+                        <i class="fa-solid fa-folder-closed"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">Completed Cases</div>
+                        <div class="metric-value">{{ stats.completed }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-green">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">In Progress / Reviewed</div>
+                        <div class="metric-value">{{ stats.in_progress }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-cyan">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">Pending Review</div>
+                        <div class="metric-value">{{ stats.pending_review }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-yellow">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Cases Table Card -->
+            <div class="card card-custom p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1">Recent Medical Cases</h5>
+                        <p class="text-muted small mb-0">Your recently filed intake submissions</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('patient.my_cases') }}" class="btn btn-secondary-custom btn-sm">
+                            <i class="fa-solid fa-list me-1"></i> View All Cases
+                        </a>
+                    </div>
+                </div>
+
+                {% if recent_cases %}
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Date Filed</th>
+                                <th>Chief Complaint</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in recent_cases %}
+                            {% set s_info = get_status_info(c.status) %}
+                            <tr>
+                                <td>
+                                    <span class="case-id-badge">{{ c.public_case_id }}</span>
+                                </td>
+                                <td class="text-muted small">
+                                    {{ c.created_at.strftime('%b %d, %Y - %I:%M %p') if c.created_at else 'Recent' }}
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark">{{ c.chief_complaint }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge-custom badge-{{ c.status }}">
+                                        <i class="fa-solid {{ s_info.icon }}"></i> {{ s_info.label }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <a href="{{ url_for('patient.case_details', public_case_id=c.public_case_id) }}" class="btn btn-sm btn-outline-primary" title="View Full Intake">
+                                            <i class="fa-regular fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ url_for('patient.qr_barcode', public_case_id=c.public_case_id) }}" class="btn btn-sm btn-outline-secondary" title="QR & Barcode Pass">
+                                            <i class="fa-solid fa-qrcode"></i> Pass
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fa-solid fa-notes-medical"></i>
+                    </div>
+                    <h5>No Medical Cases Recorded Yet</h5>
+                    <p class="text-muted small">You haven't filed any symptoms yet. Start your first AI-assisted clinical case intake to receive a doctor check-in pass.</p>
+                    <a href="{{ url_for('case.new_case') }}" class="btn btn-primary-custom mt-2">
+                        <i class="fa-solid fa-plus me-1"></i> File First Case
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

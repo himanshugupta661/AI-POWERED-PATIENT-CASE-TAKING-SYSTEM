@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Console - PatientCase AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <!-- Dark Navy Doctor Sidebar -->
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.dashboard') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.scan_case') }}" class="sidebar-link">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Scan QR / Barcode</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.case_history') }}" class="sidebar-link">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <span>Case Triage & Queue</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.patients') }}" class="sidebar-link">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Patient Roster</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.doctor_notes') }}" class="sidebar-link">
+                    <i class="fa-solid fa-book-medical"></i>
+                    <span>My Clinical Notes</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.profile') }}" class="sidebar-link">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>Doctor Profile</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-circle" style="background-color: #0284c7; width: 34px; height: 34px;">
+                        DR
+                    </div>
+                    <div class="small text-truncate" style="max-width: 130px;">
+                        <div class="text-white fw-semibold text-truncate">{{ doctor.full_name }}</div>
+                        <div class="text-muted" style="font-size: 0.75rem;">Physician</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="text-muted text-hover-white" title="Sign Out">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Doctor Cockpit Canvas -->
+    <main class="app-main">
+        <!-- Top Navigation -->
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">Clinical Physician Console</h4>
+            </div>
+
+            <div class="topbar-right">
+                <a href="{{ url_for('doctor.scan_case') }}" class="btn btn-cyan-custom btn-sm">
+                    <i class="fa-solid fa-camera me-1"></i> Scan Case Pass
+                </a>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <!-- Doctor Welcome & Clinic Header -->
+            <div class="doctor-console-header">
+                <div>
+                    <h3 class="fw-bold mb-1 text-dark">{{ doctor.full_name }}</h3>
+                    <p class="text-muted mb-0 small">
+                        <i class="fa-solid fa-hospital me-1 text-primary"></i> 
+                        {{ doctor.doctor_profile.clinic_name if doctor.doctor_profile else 'PatientCase Clinic' }}
+                        <span class="mx-2">•</span>
+                        <i class="fa-solid fa-stethoscope me-1 text-primary"></i> 
+                        {{ doctor.doctor_profile.specialization if doctor.doctor_profile else 'General Medicine' }}
+                    </p>
+                </div>
+                <div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-semibold">
+                        <i class="fa-solid fa-shield-halved me-1"></i> Authorized Medical Session
+                    </span>
+                </div>
+            </div>
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">Accessible Cases</div>
+                        <div class="metric-value">{{ stats.total }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-blue">
+                        <i class="fa-solid fa-folder-tree"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">Past 24h Intakes</div>
+                        <div class="metric-value">{{ stats.today }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-cyan">
+                        <i class="fa-solid fa-calendar-day"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">Reviewed Cases</div>
+                        <div class="metric-value">{{ stats.reviewed }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-green">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div>
+                        <div class="metric-title">Pending Physician Review</div>
+                        <div class="metric-value text-warning">{{ stats.pending_review }}</div>
+                    </div>
+                    <div class="metric-icon-box icon-yellow">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Visualizations Row -->
+            <div class="row g-4 mb-4">
+                <!-- Status Distribution Doughnut Chart -->
+                <div class="col-lg-5">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-dark">Intake Status Distribution</h6>
+                            <span class="text-muted small">Live Triage</span>
+                        </div>
+                        <div style="position: relative; height: 240px;">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Intake Trend Bar Chart -->
+                <div class="col-lg-7">
+                    <div class="card card-custom p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-dark">Weekly Patient Intake Activity</h6>
+                            <span class="text-muted small">Volume Metrics</span>
+                        </div>
+                        <div style="position: relative; height: 240px;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Intake Queue Table Card -->
+            <div class="card card-custom p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">Patient Intake Queue</h5>
+                        <p class="text-muted small mb-0">Incoming and recently submitted patient health narratives</p>
+                    </div>
+                    <a href="{{ url_for('doctor.case_history') }}" class="btn btn-secondary-custom btn-sm">
+                        View Full Queue &rarr;
+                    </a>
+                </div>
+
+                {% if recent_cases %}
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>Case ID</th>
+                                <th>Patient</th>
+                                <th>Reported Chief Complaint</th>
+                                <th>Date/Time</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in recent_cases %}
+                            {% set s_info = get_status_info(c.status) %}
+                            <tr>
+                                <td>
+                                    <span class="case-id-badge">{{ c.public_case_id }}</span>
+                                </td>
+                                <td>
+                                    <strong class="text-dark">{{ c.patient.full_name if c.patient else 'Patient' }}</strong>
+                                    <div class="small text-muted">{{ c.patient.patient_profile.gender or '' }} {{ c.patient.patient_profile.age or '' }} yrs</div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark">{{ c.chief_complaint }}</span>
+                                </td>
+                                <td class="text-muted small">
+                                    {{ c.created_at.strftime('%b %d, %H:%M') if c.created_at else '' }}
+                                </td>
+                                <td>
+                                    <span class="badge-custom badge-{{ c.status }}">
+                                        <i class="fa-solid {{ s_info.icon }}"></i> {{ s_info.label }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('doctor.patient_case', public_case_id=c.public_case_id) }}" class="btn btn-sm btn-primary-custom">
+                                        <i class="fa-solid fa-stethoscope me-1"></i> Review Case
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                    <h5>No Active Cases in Queue</h5>
+                    <p class="text-muted small">The intake queue is currently clear.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const statusData = {{ stats.status_distribution|tojson }};
+    initDoctorCharts(statusData);
+});
+</script>
+{% endblock %}

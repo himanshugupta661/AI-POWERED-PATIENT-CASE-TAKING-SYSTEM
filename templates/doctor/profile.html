@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Profile - PatientCase AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <aside class="app-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="PatientCase AI" width="30" height="30">
+            <div class="sidebar-brand-text">PATIENTCASE <span>AI</span></div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.dashboard') }}" class="sidebar-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.scan_case') }}" class="sidebar-link">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Scan QR / Barcode</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.case_history') }}" class="sidebar-link">
+                    <i class="fa-solid fa-notes-medical"></i>
+                    <span>Case Triage & Queue</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{{ url_for('doctor.profile') }}" class="sidebar-link active">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>Doctor Profile</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+                <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-lg-none" type="button">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h4 class="topbar-title">Physician Profile Settings</h4>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="card card-custom p-4 max-w-700">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="avatar-circle" style="background-color: #0284c7; width: 56px; height: 56px; font-size: 1.35rem;">
+                        DR
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-dark">{{ doctor.full_name }}</h4>
+                        <span class="text-muted small">{{ doctor.email }}</span>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('doctor.profile') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="mb-3">
+                        <label class="form-label form-label-custom">Physician Full Name</label>
+                        <input type="text" name="full_name" class="form-control form-control-custom" value="{{ doctor.full_name }}" required>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label form-label-custom">Specialization / Department</label>
+                            <input type="text" name="specialization" class="form-control form-control-custom" value="{{ profile.specialization if profile and profile.specialization else 'General Medicine' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label form-label-custom">Medical License Number</label>
+                            <input type="text" name="license_number" class="form-control form-control-custom" value="{{ profile.license_number if profile and profile.license_number else '' }}" placeholder="MED-IND-XXXX">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label form-label-custom">Clinic / Hospital Affiliation</label>
+                            <input type="text" name="clinic_name" class="form-control form-control-custom" value="{{ profile.clinic_name if profile and profile.clinic_name else '' }}" placeholder="PatientCase Clinic">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label form-label-custom">Clinical Qualifications</label>
+                            <input type="text" name="qualification" class="form-control form-control-custom" value="{{ profile.qualification if profile and profile.qualification else '' }}" placeholder="MBBS, MD">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label form-label-custom">Contact Telephone</label>
+                        <input type="tel" name="phone" class="form-control form-control-custom" value="{{ profile.phone if profile and profile.phone else '' }}" placeholder="+91 98765 43210">
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Save Physician Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
